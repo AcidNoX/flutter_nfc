@@ -8,6 +8,7 @@ class FlutterNfc {
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
+    final String thing = await _channel.invokeMethod('readNfc');
     return version;
   }
 }
