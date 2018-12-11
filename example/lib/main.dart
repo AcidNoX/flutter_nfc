@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc/flutter_nfc.dart';
+import 'package:flutter_nfc/nfc_result.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,7 +12,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  NfcResult _nfcResult = null;
 
   @override
   void initState() {
@@ -22,12 +22,12 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
+    NfcResult nfcResult;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await FlutterNfc.platformVersion;
+      nfcResult = await FlutterNfc.readNfc;
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      _nfcResult = nfcResult;
     });
   }
 
@@ -47,9 +47,13 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+        body: Column(children: <Widget>[
+          Text('Data: ${_nfcResult?.data}'),
+          Text('Scheme: ${_nfcResult?.scheme}'),
+          Text('Language: ${_nfcResult?.language}'),
+
+          RaisedButton(onPressed: this.initPlatformState, child: Text('Hello'),)
+        ],),
       ),
     );
   }
